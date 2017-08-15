@@ -3,7 +3,7 @@ library(ggplot2)
 library(splitstackshape)
 library(stringr)
 
-setwd('/Users/mishcat/documents/github/twitter_emoji');
+setwd('/Users/mishcat/documents/github/twitter_emoji/twitter-api');
 fname <- c(
   '#soundcloud'
 );
@@ -17,7 +17,7 @@ tweets.dupes <- tweets.full[duplicated(tweets.full$url), ]; nrow(tweets.full); n
 tweets <- tweets.full[!duplicated(tweets.full$url), ]; tweets <- arrange(tweets, url); row.names(tweets) <- NULL; tweets$tweetid <- as.numeric(row.names(tweets)); nrow(tweets);
 tweets.final <- tweets;
 
-setwd('/Users/mishcat/documents/github/twitter_emoji');
+setwd('/Users/mishcat/documents/github/twitter_emoji/twitter-api');
 
 emdict.la <- read.csv('emoticon_conversion_noGraphic.csv', header = F); #Lauren Ancona; https://github.com/laurenancona/twimoji/tree/master/twitterEmojiProject
 emdict.la <- emdict.la[-1, ]; row.names(emdict.la) <- NULL; names(emdict.la) <- c('unicode', 'bytes', 'name'); emdict.la$emojiid <- row.names(emdict.la);
@@ -43,5 +43,16 @@ emojis.count <- subset(emojis.m, count > 1); emojis.count$dens <- round(1000 * (
 emojis.count$rank <- as.numeric(row.names(emojis.count));
 emojis.count.p <- subset(emojis.count, select = c(name, dens, count, rank));
 
-subset(emojis.count.p, rank <= 20);
+ss<-subset(emojis.count.p, rank <= 20);
+head(ss)
+#ggplot(data=ss, aes(x=name)) + geom_bar()
+#hist(ss$name)
+sc<- ggplot(ss, aes(x=1, y=count, fill=name)) +
+  geom_bar(stat="identity") +
+  ggtitle("Pie chart of emojis associated with #soundcloud on Twitter")
+sc <- sc + coord_polar(theta='y')
+print(sc)
+
+#ggplot(ss, aes(x=name, y=count)) + 
+ # geom_bar(stat="identity")
 
